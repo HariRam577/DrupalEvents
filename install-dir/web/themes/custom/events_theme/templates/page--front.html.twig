@@ -32,17 +32,18 @@
       <form class="filter-form" id="events-filter-form">
         <div class="filter-group">
           <label for="category-filter">Category</label>
-          <select name="category" id="category-filter">
+          <select name="field_category_target_id" id="category-filter">
             <option value="">All Categories</option>
-            <option value="3">Sports</option>
-            <option value="4">Community</option>
+            {% for option in category_options %}
+              <option value="{{ option.value }}">{{ option.label }}</option>
+            {% endfor %}
           </select>
         </div>
         <div class="filter-group">
           <label for="date-filter">Date</label>
-          <input type="date" name="date" id="date-filter" value="2025-12-29">
+          <input type="date" name="field_event_date_time_value" id="date-filter">
         </div>
-        <button type="submit" class="filter-submit">Search Events</button>
+        <button type="submit" class="filter-submit">Filter Events</button>
         <button type="button" id="clear-filters" class="clear-button">Clear</button>
       </form>
     </section>
@@ -71,67 +72,84 @@
   
   const container = document.getElementById('featured-events-container');
   const filterForm = document.getElementById('events-filter-form');
-  let currentFilters = {};
+  const categorySelect = document.getElementById('category-filter');
+  const dateInput = document.getElementById('date-filter');
   const API_BASE = 'http://localhost/drupal/install-dir/web';
   
+  // Load events on page load
   loadFeaturedEvents();
   
+  // Handle filter form submission
   filterForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    updateFilters();
     loadFeaturedEvents();
   });
   
+  // Handle clear filters button
   document.getElementById('clear-filters').addEventListener('click', function() {
-    document.getElementById('category-filter').value = '';
-    document.getElementById('date-filter').value = '';
-    currentFilters = {};
+    categorySelect.value = '';
+    dateInput.value = '';
     loadFeaturedEvents();
   });
-  
-  function updateFilters() {
-    const formData = new FormData(filterForm);
-    currentFilters = Object.fromEntries(formData);
-    Object.keys(currentFilters).forEach(key => {
-      if (!currentFilters[key]) delete currentFilters[key];
-    });
-  }
   
   function loadFeaturedEvents() {
-    const params = new URLSearchParams(currentFilters);
-    const url = `${API_BASE}/api/events/upcoming${params.toString() ? '?' + params.toString() : ''}`;
+    const apiParams = new URLSearchParams();
     
-    console.log('Fetching:', url); // DEBUG
+    // Get current filter values
+    const category = categorySelect.value;
+    const date = dateInput.value;
+    
+    // Add filters to API params if they have values
+    if (category) {
+      apiParams.append('category', category);
+    }
+    if (date) {
+      apiParams.append('date', date);
+    }
+    
+    const url = `${API_BASE}/api/events/upcoming${apiParams.toString() ? '?' + apiParams.toString() : ''}`;
+    
+    console.log('Fetching:', url);
     
     container.innerHTML = '<div class="loading">Loading events...</div>';
     
     fetch(url)
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         return response.json();
       })
       .then(data => renderEvents(data))
       .catch(error => {
         console.error('API Error:', error);
-        container.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        container.innerHTML = `<div class="error">Unable to load events. Please try again later.</div>`;
       });
   }
   
   function renderEvents(data) {
     container.innerHTML = '';
+    
     if (data.status === 'success' && data.events?.length > 0) {
+      // Show up to 3 featured events
       data.events.slice(0, 3).forEach(event => {
         container.appendChild(createEventCard(event));
       });
     } else {
-      container.innerHTML = '<p class="no-events">No events found.</p>';
+      const filterActive = categorySelect.value || dateInput.value;
+      const message = filterActive 
+        ? 'No events match your filters. Try adjusting your search criteria.'
+        : 'No upcoming events at this time. Check back soon!';
+      container.innerHTML = `<p class="no-events">${message}</p>`;
     }
   }
   
   function createEventCard(event) {
     const date = new Date(event.date);
     const formattedDate = date.toLocaleDateString('en-US', { 
-      month: 'short', day: 'numeric', year: 'numeric'
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric'
     });
     
     const imageUrl = event.image_url || '/themes/custom/events_theme/images/placeholder.jpg';
@@ -155,25 +173,8 @@
         <p class="event-summary">${summary}</p>
       </div>
     `;
+    
     return article;
   }
 })();
 </script>
-
-<style>
-.filter-bar { display: flex; gap: 1rem; margin-bottom: 2rem; align-items: end; }
-.filter-group { display: flex; flex-direction: column; }
-.filter-group label { margin-bottom: 0.3rem; font-weight: 500; }
-.filter-group select, .filter-group input { padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px; }
-.filter-submit, .clear-button { 
-  padding: 0.6rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; 
-  color: white; font-weight: 500;
-}
-.filter-submit { background: #007bff; }
-.clear-button { background: #6c757d; margin-left: 0.5rem; }
-.clear-button:hover { background: #5a6268; }
-.loading, .no-events, .error { 
-  grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666; 
-}
-@media (max-width: 768px) { .filter-bar { flex-direction: column; align-items: stretch; } }
-</style>

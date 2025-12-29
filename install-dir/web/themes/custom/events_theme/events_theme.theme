@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Theme functions for events_theme.
+ */
+
+/**
+ * Preprocess for page--front.html.twig
+ */
+function events_theme_preprocess_page__front(&$variables) {
+  // Load ALL terms from your categories vocabulary
+  $terms = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadByProperties(['vid' => 'event_category']); // CHANGE 'categories' to YOUR vocab machine name
+  
+  $category_options = [];
+  foreach ($terms as $term) {
+    $category_options[] = (object) [
+      'value' => $term->id(),
+      'label' => $term->getName(),
+    ];
+  }
+  
+  $variables['category_options'] = $category_options;
+}
