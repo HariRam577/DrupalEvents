@@ -52,40 +52,6 @@ A responsive Drupal 11 website for discovering and managing local events with cu
 
 **Method:** GET
 
-**Response Format:** JSON
-
-**Example Request:**
-```bash
-curl -X GET "https://your-domain.com/api/events/upcoming"
-```
-
-**Example Response:**
-```json
-{
-  "status": "success",
-  "count": 5,
-  "events": [
-    {
-      "id": 1,
-      "title": "Summer Jazz Festival 2025",
-      "date": "2025-07-15T18:00:00",
-      "location": "Central Park Amphitheater",
-      "summary": "Join us for an evening of smooth jazz under the stars",
-      "body": "Experience the best jazz musicians...",
-      "category": {
-        "id": 1,
-        "name": "Music"
-      },
-      "image_url": "https://your-domain.com/sites/default/files/event-image.jpg"
-    }
-  ]
-}
-```
-
-**Query Parameters:**
-- Currently returns all upcoming events (date >= now)
-- Sorted by event date (ascending)
-
 ---
 
 ## 🧪 Testing
@@ -141,16 +107,6 @@ The project includes GitHub Actions CI that validates:
 - [ ] Enable error logging
 - [ ] Test all forms and API endpoints
 
-### Performance Optimization
-
-```bash
-# Enable caching
-drush config-set system.performance css.preprocess 1 -y
-drush config-set system.performance js.preprocess 1 -y
-
-# Clear cache
-drush cr
-```
 
 ---
 
@@ -189,21 +145,6 @@ The project includes 5 sample events:
 
 ### Common Issues
 
-**Issue**: Module not appearing in Extend page
-```bash
-# Clear cache
-drush cr
-# Or via UI: Configuration → Performance → Clear all caches
-```
-
-**Issue**: Theme not loading properly
-```bash
-# Rebuild theme registry
-drush cr
-# Check file permissions
-chmod -R 755 themes/custom/events_theme
-```
-
 **Issue**: API returns empty results
 - Check that events have future dates
 - Verify events are published
@@ -217,15 +158,6 @@ This project is for educational/assessment purposes.
 
 ---
 
-## 👤 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-
----
-
-## 🙏 Acknowledgments
 
 - Drupal Community
 - Color palette inspired by modern design systems
