@@ -1,0 +1,44 @@
+# Ignore core and vendor files
+/core
+/vendor
+/modules/contrib
+/themes/contrib
+/profiles/contrib
+
+# Ignore site-specific files
+sites/*/files
+sites/*/private
+
+# Ignore settings files with credentials
+sites/*/settings.php
+sites/*/settings.local.php
+
+# Ignore paths that contain user-generated content
+sites/*/files
+
+# Keep custom modules and themes
+!modules/custom
+!themes/custom
+
+# Ignore node modules
+node_modules/
+
+# Ignore Composer files
+/composer.lock
+
+# Ignore configuration sync files (optional - you may want to include these)
+# /config/sync
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*.log
+*.tmp

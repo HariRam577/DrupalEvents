@@ -872,3 +872,8 @@ $databases['default']['default'] = array (
   'autoload' => 'core/modules/mysql\\src\\Driver\\Database\\mysql\\',
 );
 $settings['config_sync_directory'] = 'sites/default/files/config_t6pGeFnX9Q_JFPDdiZROgGzJ7EOnZn56dLlszdbwoi7cgZUt1bO8T2xKURtnBYxg-AdkB1ZnAg/sync';
+$settings['config_sync_directory'] = '../config/sync';
+$config['system.logging']['error_level'] = 'verbose';
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+ini_set('display_startup_errors', TRUE);

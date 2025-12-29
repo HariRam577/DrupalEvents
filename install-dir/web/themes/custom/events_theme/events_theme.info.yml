@@ -1,0 +1,20 @@
+name: Events Theme
+type: theme
+description: "Custom theme for Local Events mini-site"
+package: Custom
+core_version_requirement: ^11
+base theme: false
+
+regions:
+  header: "Header"
+  primary_menu: "Primary menu"
+  secondary_menu: "Secondary menu"
+  breadcrumb: "Breadcrumb"
+  content: "Content"
+  sidebar_first: "Sidebar first"
+  sidebar_second: "Sidebar second"
+  footer: "Footer"
+
+libraries:
+  - events_theme/global-styling
+  - events_theme/global-scripts

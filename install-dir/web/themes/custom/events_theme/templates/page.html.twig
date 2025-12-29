@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Default page template.
+ */
+#}
+
+{# Header #}
+<header class="site-header">
+  <div class="container">
+    <div class="site-logo">
+      <a href="{{ path('<front>') }}">Local Events</a>
+    </div>
+    {% if page.primary_menu %}
+      <nav class="main-nav">
+        {{ page.primary_menu }}
+      </nav>
+    {% endif %}
+  </div>
+</header>
+
+{# Main Content #}
+<main class="main-content">
+  <div class="container">
+    
+    {% if page.breadcrumb %}
+      {{ page.breadcrumb }}
+    {% endif %}
+
+    <div class="content-wrapper">
+      {% if page.sidebar_first %}
+        <aside class="sidebar-first">
+          {{ page.sidebar_first }}
+        </aside>
+      {% endif %}
+
+      <div class="main-content-area">
+        {{ page.content }}
+      </div>
+
+      {% if page.sidebar_second %}
+        <aside class="sidebar-second">
+          {{ page.sidebar_second }}
+        </aside>
+      {% endif %}
+    </div>
+
+  </div>
+</main>
+
+{# Footer #}
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; {{ "now"|date("Y") }} Local Events. All rights reserved.</p>
+    {% if page.footer %}
+      {{ page.footer }}
+    {% endif %}
+  </div>
+</footer>

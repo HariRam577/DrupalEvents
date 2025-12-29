@@ -1,0 +1,142 @@
+{#
+/**
+ * @file
+ * Theme override for the front page.
+ */
+#}
+
+{# Header #}
+<header class="site-header">
+  <div class="container">
+    <div class="site-logo">
+      <a href="{{ path('<front>') }}">Local Events</a>
+    </div>
+    {% if page.primary_menu %}
+      <nav class="main-nav">
+        {{ page.primary_menu }}
+      </nav>
+    {% endif %}
+  </div>
+</header>
+
+{# Hero Section #}
+<section class="hero-section">
+  <div class="container">
+    <h1>Discover Amazing Events Near You</h1>
+    <p>Connect with your community through music, tech, sports, and more</p>
+    <a href="http://localhost/drupal/install-dir/web/events" class="cta-button">Explore Events</a>
+  </div>
+</section>
+
+{# Main Content #}
+<main class="main-content">
+  <div class="container">
+    
+    {# Search/Filter Bar #}
+    <section class="filter-bar">
+      <form class="filter-form" action="/events" method="get">
+        <div class="filter-group">
+          <label for="category-filter">Category</label>
+          <select name="category" id="category-filter">
+            <option value="">All Categories</option>
+            <option value="music">Music</option>
+            <option value="tech">Tech</option>
+            <option value="sports">Sports</option>
+            <option value="community">Community</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="date-filter">Date</label>
+          <input type="date" name="date" id="date-filter">
+        </div>
+        <button type="submit" class="filter-submit">Search Events</button>
+      </form>
+    </section>
+
+    {# Featured Events Section #}
+    <section class="featured-events">
+      <h2 class="section-title">Featured Upcoming Events</h2>
+      
+      <div class="events-grid" id="featured-events-container">
+        {# Events will be loaded here via JavaScript or server-side #}
+      </div>
+      
+      <div class="text-center mt-4">
+        <a href="http://localhost/drupal/install-dir/web/events" class="cta-button">View All Events</a>
+      </div>
+    </section>
+
+    {# Page Content #}
+    {% if page.content %}
+      <section class="page-content">
+        {{ page.content }}
+      </section>
+    {% endif %}
+
+  </div>
+</main>
+
+{# Footer #}
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; {{ "now"|date("Y") }} Local Events. All rights reserved.</p>
+    {% if page.footer %}
+      {{ page.footer }}
+    {% endif %}
+  </div>
+</footer>
+
+{# Load featured events via API #}
+<script>
+(function() {
+  'use strict';
+  
+  // Fetch featured events from API
+  fetch('/api/events/upcoming')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success' && data.events.length > 0) {
+        const container = document.getElementById('featured-events-container');
+        const events = data.events.slice(0, 3); // Get first 3 events
+        
+        events.forEach(event => {
+          const card = createEventCard(event);
+          container.innerHTML += card;
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error loading featured events:', error);
+    });
+  
+  // Create event card HTML
+  function createEventCard(event) {
+    const date = new Date(event.date);
+    const formattedDate = date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+    
+    const imageUrl = event.image_url || '/themes/custom/events_theme/images/placeholder.jpg';
+    const categoryName = event.category ? event.category.name : 'Event';
+    
+    return `
+      <article class="event-card" tabindex="0">
+        <div class="event-image-wrapper">
+          <img src="${imageUrl}" alt="${event.title}" class="event-image">
+          <div class="date-badge">${formattedDate}</div>
+        </div>
+        <div class="event-content">
+          <h3 class="event-title">
+            <a href="/node/${event.id}">${event.title}</a>
+          </h3>
+          <span class="category-chip">${categoryName}</span>
+          <div class="event-location">${event.location}</div>
+          <p class="event-summary">${event.summary}</p>
+        </div>
+      </article>
+    `;
+  }
+})();
+</script>
