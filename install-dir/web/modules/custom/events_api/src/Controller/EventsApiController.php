@@ -79,16 +79,28 @@ class EventsApiController extends ControllerBase {
 //     ]);
 //   }
 public function upcoming() {
-  // Get current time if you want to filter by future events (optional)
-  //$current_time = \Drupal::time()->getRequestTime();
+  // Get filter parameters from request
+  $request = \Drupal::request();
+  $category = $request->query->get('category');
+  $date = $request->query->get('date');
 
-  // Query for all published events
+  // Build base query
   $query = \Drupal::entityQuery('node')
-    ->condition('type', 'event')   // event content type
-    ->condition('status', 1)       // only published
-    ->sort('field_event_date_time', 'ASC') // sort by event date
+    ->condition('type', 'event')
+    ->condition('status', 1)
+    ->sort('field_event_date_time', 'ASC')
     ->accessCheck(TRUE);
 
+  // ADD FILTERS - This was missing!
+  if ($category) {
+    $query->condition('field_category', $category, 'IN');
+  }
+
+  if ($date) {
+    $query->condition('field_event_date_time', $date, '=');
+  }
+
+  $query->range(0, 50); // Limit results for performance
   $nids = $query->execute();
   $events = [];
 
@@ -131,10 +143,11 @@ public function upcoming() {
     }
   }
 
+  // Frontend always shows first 3
   return new JsonResponse([
     'status' => 'success',
     'count' => count($events),
-    'events' => $events,
+    'events' => array_slice($events, 0, 3),
   ]);
 }
 
